@@ -1,0 +1,24 @@
+{
+  "name": "subastas",
+  "version": "1.0.0",
+  "description": "Proyecto serverless de subastas",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "babel-core": "^6.26.3",
+    "babel-loader": "^9.1.2",
+    "babel-plugin-transform-runtime": "^6.23.0",
+    "babel-polyfill": "^6.26.0",
+    "babel-preset-env": "^1.7.0",
+    "serverless-bundle": "^6.0.0",
+    "webpack": "^5.83.1"
+  },
+  "dependencies": {
+    "@aws-sdk/client-s3": "^3.335.0"
+  }
+}
