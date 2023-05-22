@@ -10,7 +10,7 @@ const dynamo = DynamoDBDocumentClient.from(
 
 const crearSubasta = async (event, context) => {
   try {
-    const subasta = JSON.parse(event.body);
+    const subasta = event.body;
 
     const newSubasta = {
       ...subasta,
