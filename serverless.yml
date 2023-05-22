@@ -7,15 +7,46 @@ plugins:
 provider:
   name: aws
   runtime: nodejs18.x
-  memorysize: 128
+  memorySize: 128
   region: us-west-2
   stage: ${opt:stage, 'dev'}
-  lambdaHashingVersion: 
-  
+  iamRoleStatements:
+    - Effect: Allow
+      Action: 
+        - dynamodb:PutItem
+        - dynamodb:Scan
+        - dynamodb:GetItem
+      Resource:
+        - "arn:aws:dynamodb:us-west-2:580085829035:table/SubastasTable" 
+
+resources:
+  Resources:
+    SubastasTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: SubastasTable
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: S
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
+        BillingMode: PAY_PER_REQUEST
+
 functions:
-  api:
-    handler: index.handler
+  crearSubasta:
+    handler: src/handlers/crearSubasta.handler
     events:
       - httpApi:
-          path: /
-          method: get
+          path: /subasta
+          method: POST
+  listarSubastas:
+    handler: src/handlers/listarSubastas.handler
+    events:
+      - httpApi:
+          path: /subasta
+          method: GET
+
+custom:
+  bundle:
+    linting: false
