@@ -11,12 +11,19 @@ const dynamo = DynamoDBDocumentClient.from(
 const crearSubasta = async (event, context) => {
   try {
     const subasta = event.body;
+    const now = new Date();
+    const fechaFin = new Date();
+    fechaFin.setHours(now.getHours() + 1);
 
     const newSubasta = {
       ...subasta,
       estado: "ABIERTA",
-      fecha: new Date().toLocaleDateString(),
+      fechaInicio: now.toISOString(),
+      fechaFin: fechaFin.toISOString(),
       id: uuid(),
+      ofertaMayor: {
+        cantidad: 0,
+      },
     };
 
     const headers = {
@@ -43,6 +50,5 @@ const crearSubasta = async (event, context) => {
     throw new createError.InternalServerError(error);
   }
 };
-
 
 export const handler = commonMiddleware(crearSubasta);

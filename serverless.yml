@@ -1,5 +1,5 @@
 service: subastas
-frameworkVersion: '2 || 3'
+frameworkVersion: "2 || 3"
 
 plugins:
   - serverless-bundle
@@ -12,13 +12,15 @@ provider:
   stage: ${opt:stage, 'dev'}
   iamRoleStatements:
     - Effect: Allow
-      Action: 
+      Action:
         - dynamodb:PutItem
         - dynamodb:Scan
         - dynamodb:GetItem
+        - dynamodb:UpdateItem
+        - dynamodb:Query
       Resource:
-        - "arn:aws:dynamodb:us-west-2:580085829035:table/SubastasTable" 
-
+        - "arn:aws:dynamodb:us-west-2:580085829035:table/SubastasTable"
+        - !Join ['/', [arn:aws:dynamodb:us-west-2:580085829035:table/SubastasTable, 'index', 'estadoFechaFinIndex']]
 resources:
   Resources:
     SubastasTable:
@@ -28,9 +30,22 @@ resources:
         AttributeDefinitions:
           - AttributeName: id
             AttributeType: S
+          - AttributeName: estado
+            AttributeType: S
+          - AttributeName: fechaFin
+            AttributeType: S
         KeySchema:
           - AttributeName: id
             KeyType: HASH
+        GlobalSecondaryIndexes:
+          - IndexName: estadoFechaFinIndex
+            KeySchema:
+              - AttributeName: estado
+                KeyType: HASH
+              - AttributeName: fechaFin
+                KeyType: RANGE
+            Projection:
+                ProjectionType: ALL
         BillingMode: PAY_PER_REQUEST
 
 functions:
@@ -46,6 +61,22 @@ functions:
       - httpApi:
           path: /subasta
           method: GET
+  obtenerSubasta:
+    handler: src/handlers/obtenerSubasta.handler
+    events:
+      - httpApi:
+          path: /subasta/{id}
+          method: GET
+  hacerOferta:
+    handler: src/handlers/hacerOferta.handler
+    events:
+      - httpApi:
+          path: /subasta/{id}/ofertar
+          method: PATCH
+  procesarSubastas:
+    handler: src/handlers/procesarSubastas.handler
+    #events:
+    #- schedule: rate(1 minute)
 
 custom:
   bundle:
